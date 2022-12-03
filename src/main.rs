@@ -1,12 +1,12 @@
-pub mod configs;
-pub mod hooks;
-use axum::{routing::get, Router};
+pub mod modules;
+use modules::routes::RouterServiceCenter;
 #[tokio::main]
 async fn main() {
-    let app = Router::new().merge(Router::new().route("/", get(|| async { "Hello, World!" })));
-
-    axum::Server::bind(&"0.0.0.0:8080".parse().unwrap())
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    if let Some(router_service_center) = RouterServiceCenter::get_single_instance() {
+        let app = router_service_center.get_app();
+        axum::Server::bind(&"0.0.0.0:80".parse().unwrap())
+            .serve(app.into_make_service())
+            .await
+            .unwrap();
+    }
 }
