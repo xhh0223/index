@@ -1,7 +1,7 @@
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 
-#[derive(Hash,PartialEq, Eq)]
+#[derive(Hash, PartialEq, Eq)]
 pub enum DataBase<'a> {
     Mysql(&'a str),
 }
