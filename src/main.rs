@@ -1,13 +1,25 @@
+#[macro_use]
+extern crate rbatis;
+use std::io::Error;
+
+use rbdc_mysql::driver::MysqlDriver;
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Img {
+    id: usize,
+    name: String,
+}
+impl_select!(Img{select_all()=>""},"image");
 pub mod configs;
-pub mod modules;
-
-use std::error::Error;
-
-use configs::database::GITHUB_INDEX_MYSQL;
-
 #[tokio::main]
-async fn main() -> Result<(), sqlx::Error> {
-    let v = GITHUB_INDEX_MYSQL.getPool(2).await?;
-    sqlx::query("select * from image").fetch_all(&v).await?;
+async fn main() -> Result<(), rbatis::Error> {
+    let mut result = configs::database::MYSQL_RBATIS.lock().unwrap();
+    result.init(
+        MysqlDriver {},
+        "mysql://root:04095413@127.0.0.1:3306/github_index",
+    );
+    Img::select_all(&mut *result).await?;
+
     Ok(())
 }
